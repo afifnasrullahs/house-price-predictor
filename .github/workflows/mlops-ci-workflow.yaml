@@ -1,12 +1,7 @@
 name: MLops CI
 
 on:
-  push:
-    branches:
-      - main
-    pull_request:
-      branches:
-      - main
+  workflow_dispatch: {}
 
 jobs:
   e2e_mlops_workflow:
@@ -38,15 +33,12 @@ jobs:
             --output data/processed/featured_house_data.csv \
             --preprocessor models/trained/preprocessor.pkl
 
-      - name: Run Mlflow
-        run: |
-          docker pull ghcr.io/mlflow/mlflow:latest
-          docker run -d -p 5555:5000 --name mlflow-server ghcr.io/mlflow/mlflow:latest \
-            mlflow server --host 0.0.0.0 \
-            --backend-store-uri sqlite:///mlflow.db \
-            --default-artifact-root /tmp/mlruns
-
-
+      - name: Upload porcessed data
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-data
+          path: data/processed/featured_house_data.csv
+      
       - name: Run model build test
         run: |
           python src/models/train_model.py \
