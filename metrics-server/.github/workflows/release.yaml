@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b #v4.1.4
+      - name: Build manifests
+        run: make release-manifests
+      - name: Release manifests
+        uses: softprops/action-gh-release@d99959edae48b5ffffd7b00da66dcdb0a33a52ee # v0.1.15
+        with:
+          files: |
+            _output/components.yaml
+            _output/high-availability.yaml
+            _output/high-availability-1.21+.yaml
+      - name: Build binaries
+        run: make build-all
+      - name: Release binaries
+        uses: softprops/action-gh-release@d99959edae48b5ffffd7b00da66dcdb0a33a52ee # v0.1.15
+        with:
+          files: |
+            _output/metrics-server-*

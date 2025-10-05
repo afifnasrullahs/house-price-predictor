@@ -1,0 +1,4 @@
+resources:
+  - fastapi-scaledobject.yaml
+  - model-vpa.yaml
+  - servicemonitor.yaml
